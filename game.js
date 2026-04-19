@@ -45,9 +45,9 @@ function makeCard(index, { op, a, b }) {
 
   const card = document.createElement('div');
   card.className = 'card';
+  card.dataset.state = 'idle';
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
-  card.setAttribute('aria-pressed', 'false');
   card.setAttribute('aria-label', `Card ${index + 1}: ${x} ${op} ${y}`);
   card.style.setProperty('--i', index);
 
@@ -55,30 +55,74 @@ function makeCard(index, { op, a, b }) {
     <div class="card-inner" aria-hidden="true">
       <div class="card-face card-front">
         <span class="question">${x} ${op} ${y}</span>
+        <div class="card-answer">
+          <input class="card-input" type="number" min="0" max="9999" autocomplete="off" />
+          <button class="card-submit" type="button" tabindex="-1">✓</button>
+        </div>
       </div>
       <div class="card-face card-back">
+        <span class="guess" hidden></span>
         <span class="equation">${x} ${op} ${y} =</span>
         <span class="answer">${result}</span>
       </div>
     </div>
   `;
 
-  card.addEventListener('click', () => flipCard(card));
+  card.addEventListener('click', () => activateCard(card));
   card.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      flipCard(card);
+      activateCard(card);
     }
+  });
+
+  const input = card.querySelector('.card-input');
+  const submitBtn = card.querySelector('.card-submit');
+
+  input.addEventListener('click', (e) => e.stopPropagation());
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.stopPropagation();
+      submitCard(card);
+    }
+  });
+
+  submitBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    submitCard(card);
   });
 
   return card;
 }
 
-function flipCard(card) {
+function activateCard(card) {
   if (transitioning) return;
-  if (card.getAttribute('aria-pressed') === 'true') return;
+  if (card.dataset.state !== 'idle') return;
 
-  card.setAttribute('aria-pressed', 'true');
+  card.dataset.state = 'answering';
+  card.setAttribute('tabindex', '-1');
+  card.querySelector('.card-input').focus();
+}
+
+function submitCard(card) {
+  if (card.dataset.state !== 'answering') return;
+
+  const input   = card.querySelector('.card-input');
+  const guess   = input.value.trim();
+  const correct = Number(guess) === Number(card.querySelector('.answer').textContent);
+
+  card.dataset.state   = 'flipped';
+  card.dataset.correct = correct ? 'yes' : 'no';
+
+  if (guess !== '') {
+    const guessEl  = card.querySelector('.guess');
+    const eqBase   = card.querySelector('.equation').textContent.replace(/\s*=$/, '');
+    const symbol   = correct ? '=' : '≠';
+    guessEl.textContent = `${eqBase} ${symbol} ${guess}`;
+    guessEl.hidden = false;
+  }
+
   const eq  = card.querySelector('.equation').textContent;
   const ans = card.querySelector('.answer').textContent;
   card.setAttribute('aria-label', `${eq} ${ans}`);
