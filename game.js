@@ -9,42 +9,32 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 const board       = document.getElementById('board');
 const modeButtons = document.querySelectorAll('.mode-btn');
-const diffButtons = document.querySelectorAll('.diff-btn');
+const maxButtons  = document.querySelectorAll('.max-btn');
 
 let flippedCount  = 0;
 let transitioning = false;
 let mode          = 'add';  // 'add' | 'multiply' | 'both'
-let difficulty    = 'easy'; // 'easy' | 'medium' | 'hard'
+let maxNum        = 10; // 1–10: highest number that can appear on a card
 
-// Per-number weights by difficulty
-const WEIGHTS = {
-  easy:   { 1:3, 2:3, 3:3, 4:3, 5:3, 6:1, 7:1, 8:1, 9:1, 10:3 },
-  medium: { 1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1 },
-  hard:   { 1:1, 2:1, 3:1, 4:1, 5:1, 6:3, 7:3, 8:3, 9:3, 10:1 },
-};
-
-// Build every unique canonical pair for the current mode, then pick
-// CARD_COUNT of them via weighted sampling without replacement
-// (Efraimidis-Spirakis: score = rand^(1/weight), sort descending).
 function dealCards() {
   const nums = [1,2,3,4,5,6,7,8,9,10];
   const ops  = mode === 'both' ? ['+', '×'] : mode === 'add' ? ['+'] : ['×'];
-  const w    = WEIGHTS[difficulty];
   const candidates = [];
 
   for (const op of ops) {
     for (let i = 0; i < nums.length; i++) {
+      const a = nums[i];
+      if (a > maxNum) break; // a is the smaller operand; all further i also exceed limit
       for (let j = i; j < nums.length; j++) {
-        const a = nums[i], b = nums[j];
-        const weight = w[a] * w[b];
-        const score  = Math.random() ** (1 / weight);
+        const b = nums[j];
+        const score = Math.random();
         candidates.push({ op, a, b, score });
       }
     }
   }
 
   candidates.sort((x, y) => y.score - x.score);
-  return candidates.slice(0, CARD_COUNT);
+  return candidates.slice(0, Math.min(CARD_COUNT, candidates.length));
 }
 
 function makeCard(index, { op, a, b }) {
@@ -95,7 +85,8 @@ function flipCard(card) {
 
   flippedCount++;
 
-  if (flippedCount === CARD_COUNT) {
+  const totalCards = board.querySelectorAll('.card').length;
+  if (flippedCount === totalCards) {
     transitioning = true;
     setTimeout(exitCards, reducedMotion.matches ? 0 : PAUSE_MS);
   }
@@ -110,7 +101,7 @@ function exitCards() {
 
   const totalExitMs = reducedMotion.matches
     ? 0
-    : EXIT_STAGGER * (CARD_COUNT - 1) + EXIT_DUR;
+    : EXIT_STAGGER * (cards.length - 1) + EXIT_DUR;
   setTimeout(newRound, totalExitMs);
 }
 
@@ -143,7 +134,7 @@ function setupToggleGroup(buttons, getCurrent, setCurrent) {
 }
 
 setupToggleGroup(modeButtons, () => mode, (v) => { mode = v; });
-setupToggleGroup(diffButtons, () => difficulty, (v) => { difficulty = v; });
+setupToggleGroup(maxButtons, () => String(maxNum), (v) => { maxNum = Number(v); });
 
 // Initial deal
 newRound();

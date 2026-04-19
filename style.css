@@ -63,12 +63,13 @@ main {
 
 .toolbar {
   display: flex;
-  gap: .7rem;
+  flex-wrap: wrap;
+  gap: .5rem;
 }
 
 /* shared button base */
 .mode-btn,
-.diff-btn {
+.max-btn {
   font-size: 1.1rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -81,8 +82,15 @@ main {
   transition: background .15s, color .15s, transform .1s, box-shadow .1s;
 }
 
+.max-btn {
+  font-size: 1rem;
+  padding: .4rem .7rem;
+  min-width: 2.4rem;
+  text-transform: none;
+}
+
 .mode-btn:hover,
-.diff-btn:hover {
+.max-btn:hover {
   background: #d0d0d0;
   transform: translateY(-2px);
 }
@@ -93,14 +101,14 @@ main {
   box-shadow: 0 4px 0 #4834d4;
 }
 
-.diff-btn.active {
+.max-btn.active {
   background: #00b894;
   color: #fff;
   box-shadow: 0 4px 0 #00896e;
 }
 
 .mode-btn:focus-visible,
-.diff-btn:focus-visible {
+.max-btn:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
@@ -109,7 +117,7 @@ main {
   box-shadow: var(--focus-ring), 0 4px 0 #4834d4;
 }
 
-.diff-btn.active:focus-visible {
+.max-btn.active:focus-visible {
   box-shadow: var(--focus-ring), 0 4px 0 #00896e;
 }
 
