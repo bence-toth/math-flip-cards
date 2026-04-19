@@ -1,0 +1,168 @@
+/* ── Reset & tokens ───────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --clr-bg:        #fff8f0;
+  --clr-front-1:   #ff6b6b;
+  --clr-front-2:   #ff9f43;
+  --clr-front-3:   #48dbfb;
+  --clr-front-4:   #1dd1a1;
+  --clr-front-5:   #a29bfe;
+  --clr-front-6:   #fd79a8;
+  --clr-back:      #ffeaa7;
+  --clr-back-text: #2d3436;
+  --clr-white:     #ffffff;
+  --radius:        1.2rem;
+  --transition:    0.55s cubic-bezier(.4,1.4,.6,1);
+  --focus-ring:    0 0 0 4px #fdcb6e, 0 0 0 7px #e17055;
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+html { font-size: 18px; }
+
+body {
+  min-height: 100dvh;
+  background: var(--clr-bg);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-block: 1.5rem;
+  padding-inline: 1rem;
+}
+
+
+/* ── Board ────────────────────────────────────────────────── */
+main {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.1rem;
+  width: 100%;
+}
+
+@media (max-width: 560px) {
+  .board {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Card shell ───────────────────────────────────────────── */
+.card {
+  aspect-ratio: 5 / 4;
+  perspective: 900px;
+  cursor: pointer;
+  outline: none;
+}
+
+.card:focus-visible .card-inner {
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius);
+}
+
+.card[aria-pressed="true"] {
+  pointer-events: none;
+}
+
+/* ── Card inner (3-D flipper) ─────────────────────────────── */
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform var(--transition);
+  border-radius: var(--radius);
+  will-change: transform;
+}
+
+.card[aria-pressed="true"] .card-inner {
+  transform: rotateY(180deg);
+}
+
+/* ── Faces ────────────────────────────────────────────────── */
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: .8rem;
+  user-select: none;
+}
+
+/* Front face — question */
+.card-front {
+  color: var(--clr-white);
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 800;
+  text-shadow: 1px 2px 4px rgba(0,0,0,.2);
+  gap: .4rem;
+}
+
+/* colour cycling via nth-child */
+.card:nth-child(6n+1)  .card-front { background: var(--clr-front-1); }
+.card:nth-child(6n+2)  .card-front { background: var(--clr-front-2); }
+.card:nth-child(6n+3)  .card-front { background: var(--clr-front-3); }
+.card:nth-child(6n+4)  .card-front { background: var(--clr-front-4); }
+.card:nth-child(6n+5)  .card-front { background: var(--clr-front-5); }
+.card:nth-child(6n+6)  .card-front { background: var(--clr-front-6); }
+
+.card-front .question {
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+}
+
+/* Back face — answer */
+.card-back {
+  background: var(--clr-back);
+  color: var(--clr-back-text);
+  transform: rotateY(180deg);
+  gap: .35rem;
+  text-align: center;
+}
+
+.card-back .equation {
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.card-back .answer {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  color: #e17055;
+}
+
+
+/* ── Card animations ──────────────────────────────────────── */
+@keyframes cardAppear {
+  from { opacity: 0; transform: scale(.7) rotate(-4deg); }
+  to   { opacity: 1; transform: scale(1)  rotate(0deg);  }
+}
+
+@keyframes cardExit {
+  from { opacity: 1; transform: scale(1)   rotate(0deg); }
+  to   { opacity: 0; transform: scale(.7)  rotate(4deg); }
+}
+
+.card {
+  animation: cardAppear .45s cubic-bezier(.4,1.5,.6,1) both;
+}
+
+.card.exiting {
+  animation: cardExit .35s cubic-bezier(.4,0,.6,1) both;
+  pointer-events: none;
+}
+
+/* stagger via inline style --i set in JS */
+.card { animation-delay: calc(var(--i, 0) * 55ms); }
+.card.exiting { animation-delay: calc(var(--i, 0) * 40ms); }
+
