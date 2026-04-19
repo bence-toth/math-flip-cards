@@ -7,23 +7,37 @@ const EXIT_DUR     = 350;
 
 const board       = document.getElementById('board');
 const modeButtons = document.querySelectorAll('.mode-btn');
+const diffButtons = document.querySelectorAll('.diff-btn');
 
 let flippedCount  = 0;
 let transitioning = false;
-let mode          = 'add'; // 'add' | 'multiply' | 'both'
+let mode          = 'add';  // 'add' | 'multiply' | 'both'
+let difficulty    = 'easy'; // 'easy' | 'medium' | 'hard'
 
-function rand(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+// Weighted number pools for each difficulty.
+// Easy:   1-5 and 10 appear 3×, 6-9 appear 1×
+// Medium: all numbers appear equally
+// Hard:   6-9 appear 3×, 1-5 and 10 appear 1×
+const POOLS = {
+  easy:   [...'1,2,3,4,5,10,1,2,3,4,5,10,1,2,3,4,5,10,6,7,8,9'.split(',').map(Number)],
+  medium: [1,2,3,4,5,6,7,8,9,10],
+  hard:   [...'6,7,8,9,6,7,8,9,6,7,8,9,1,2,3,4,5,10'.split(',').map(Number)],
+};
+
+function randFrom(pool) {
+  return pool[Math.floor(Math.random() * pool.length)];
 }
 
 function makeCard(index) {
-  let isMultiply;
-  if (mode === 'add')      isMultiply = false;
-  else if (mode === 'multiply') isMultiply = true;
-  else                     isMultiply = Math.random() < 0.5;
+  const pool = POOLS[difficulty];
 
-  const x = rand(1, 10);
-  const y = rand(1, 10);
+  let isMultiply;
+  if (mode === 'add')           isMultiply = false;
+  else if (mode === 'multiply') isMultiply = true;
+  else                          isMultiply = Math.random() < 0.5;
+
+  const x = randFrom(pool);
+  const y = randFrom(pool);
   const op     = isMultiply ? '×' : '+';
   const result = isMultiply ? x * y : x + y;
 
@@ -98,21 +112,26 @@ function newRound() {
   board.querySelector('.card')?.focus();
 }
 
-modeButtons.forEach((btn) => {
-  btn.addEventListener('click', () => {
-    if (btn.dataset.mode === mode || transitioning) return;
+function setupToggleGroup(buttons, getCurrent, setCurrent) {
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset[Object.keys(btn.dataset)[0]] === getCurrent() || transitioning) return;
 
-    mode = btn.dataset.mode;
+      setCurrent(btn.dataset[Object.keys(btn.dataset)[0]]);
 
-    modeButtons.forEach((b) => {
-      b.classList.toggle('active', b === btn);
-      b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      buttons.forEach((b) => {
+        b.classList.toggle('active', b === btn);
+        b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+      });
+
+      transitioning = true;
+      exitCards();
     });
-
-    transitioning = true;
-    exitCards();
   });
-});
+}
+
+setupToggleGroup(modeButtons, () => mode, (v) => { mode = v; });
+setupToggleGroup(diffButtons, () => difficulty, (v) => { difficulty = v; });
 
 // Initial deal
 newRound();

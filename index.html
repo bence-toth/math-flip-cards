@@ -8,10 +8,18 @@
 </head>
 <body>
   <main>
-    <div class="toolbar" role="group" aria-label="Operation mode">
-      <button class="mode-btn active" data-mode="add" aria-pressed="true">only +</button>
-      <button class="mode-btn" data-mode="multiply" aria-pressed="false">only ×</button>
-      <button class="mode-btn" data-mode="both" aria-pressed="false">both + and ×</button>
+    <div class="topbar">
+      <div class="toolbar" role="group" aria-label="Operation mode">
+        <button class="mode-btn active" data-mode="add" aria-pressed="true">only +</button>
+        <button class="mode-btn" data-mode="multiply" aria-pressed="false">only ×</button>
+        <button class="mode-btn" data-mode="both" aria-pressed="false">both + and ×</button>
+      </div>
+
+      <div class="toolbar" role="group" aria-label="Difficulty">
+        <button class="diff-btn active" data-diff="easy" aria-pressed="true">Easy</button>
+        <button class="diff-btn" data-diff="medium" aria-pressed="false">Medium</button>
+        <button class="diff-btn" data-diff="hard" aria-pressed="false">Hard</button>
+      </div>
     </div>
 
     <div
