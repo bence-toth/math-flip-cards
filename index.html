@@ -8,6 +8,12 @@
 </head>
 <body>
   <main>
+    <div class="toolbar" role="group" aria-label="Operation mode">
+      <button class="mode-btn active" data-mode="add" aria-pressed="true">only +</button>
+      <button class="mode-btn" data-mode="multiply" aria-pressed="false">only ×</button>
+      <button class="mode-btn" data-mode="both" aria-pressed="false">both + and ×</button>
+    </div>
+
     <div
       id="board"
       class="board"

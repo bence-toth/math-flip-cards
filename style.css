@@ -37,6 +37,48 @@ body {
 main {
   width: 100%;
   max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+/* ── Toolbar ──────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  gap: .7rem;
+  justify-content: center;
+}
+
+.mode-btn {
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding: .45rem 1.4rem;
+  border: 3px solid transparent;
+  border-radius: 3rem;
+  background: #e0e0e0;
+  color: #555;
+  cursor: pointer;
+  transition: background .15s, color .15s, transform .1s, box-shadow .1s;
+}
+
+.mode-btn:hover {
+  background: #d0d0d0;
+  transform: translateY(-2px);
+}
+
+.mode-btn.active {
+  background: #6c5ce7;
+  color: #fff;
+  box-shadow: 0 4px 0 #4834d4;
+}
+
+.mode-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.mode-btn.active:focus-visible {
+  box-shadow: var(--focus-ring), 0 4px 0 #4834d4;
 }
 
 .board {

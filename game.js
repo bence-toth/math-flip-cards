@@ -1,28 +1,34 @@
 'use strict';
 
 const CARD_COUNT   = 12;
-const PAUSE_MS     = 2000;  // pause after last flip before exit begins
-const EXIT_STAGGER = 40;    // ms per card in exit animation (must match CSS)
-const EXIT_DUR     = 350;   // ms for a single card exit animation (must match CSS)
+const PAUSE_MS     = 2000;
+const EXIT_STAGGER = 40;
+const EXIT_DUR     = 350;
 
-const board = document.getElementById('board');
+const board       = document.getElementById('board');
+const modeButtons = document.querySelectorAll('.mode-btn');
 
-let flippedCount = 0;
+let flippedCount  = 0;
 let transitioning = false;
+let mode          = 'add'; // 'add' | 'multiply' | 'both'
 
 function rand(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function makeCard(index) {
-  const isMultiply = Math.random() < 0.5;
+  let isMultiply;
+  if (mode === 'add')      isMultiply = false;
+  else if (mode === 'multiply') isMultiply = true;
+  else                     isMultiply = Math.random() < 0.5;
+
   const x = rand(1, 10);
   const y = rand(1, 10);
   const op     = isMultiply ? '×' : '+';
   const result = isMultiply ? x * y : x + y;
 
   const card = document.createElement('div');
-  card.className  = 'card';
+  card.className = 'card';
   card.setAttribute('role', 'button');
   card.setAttribute('tabindex', '0');
   card.setAttribute('aria-pressed', 'false');
@@ -91,6 +97,22 @@ function newRound() {
 
   board.querySelector('.card')?.focus();
 }
+
+modeButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.mode === mode || transitioning) return;
+
+    mode = btn.dataset.mode;
+
+    modeButtons.forEach((b) => {
+      b.classList.toggle('active', b === btn);
+      b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+    });
+
+    transitioning = true;
+    exitCards();
+  });
+});
 
 // Initial deal
 newRound();
