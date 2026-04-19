@@ -14,31 +14,41 @@ let transitioning = false;
 let mode          = 'add';  // 'add' | 'multiply' | 'both'
 let difficulty    = 'easy'; // 'easy' | 'medium' | 'hard'
 
-// Weighted number pools for each difficulty.
-// Easy:   1-5 and 10 appear 3×, 6-9 appear 1×
-// Medium: all numbers appear equally
-// Hard:   6-9 appear 3×, 1-5 and 10 appear 1×
-const POOLS = {
-  easy:   [...'1,2,3,4,5,10,1,2,3,4,5,10,1,2,3,4,5,10,6,7,8,9'.split(',').map(Number)],
-  medium: [1,2,3,4,5,6,7,8,9,10],
-  hard:   [...'6,7,8,9,6,7,8,9,6,7,8,9,1,2,3,4,5,10'.split(',').map(Number)],
+// Per-number weights by difficulty
+const WEIGHTS = {
+  easy:   { 1:3, 2:3, 3:3, 4:3, 5:3, 6:1, 7:1, 8:1, 9:1, 10:3 },
+  medium: { 1:1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1, 10:1 },
+  hard:   { 1:1, 2:1, 3:1, 4:1, 5:1, 6:3, 7:3, 8:3, 9:3, 10:1 },
 };
 
-function randFrom(pool) {
-  return pool[Math.floor(Math.random() * pool.length)];
+// Build every unique canonical pair for the current mode, then pick
+// CARD_COUNT of them via weighted sampling without replacement
+// (Efraimidis-Spirakis: score = rand^(1/weight), sort descending).
+function dealCards() {
+  const nums = [1,2,3,4,5,6,7,8,9,10];
+  const ops  = mode === 'both' ? ['+', '×'] : mode === 'add' ? ['+'] : ['×'];
+  const w    = WEIGHTS[difficulty];
+  const candidates = [];
+
+  for (const op of ops) {
+    for (let i = 0; i < nums.length; i++) {
+      for (let j = i; j < nums.length; j++) {
+        const a = nums[i], b = nums[j];
+        const weight = w[a] * w[b];
+        const score  = Math.random() ** (1 / weight);
+        candidates.push({ op, a, b, score });
+      }
+    }
+  }
+
+  candidates.sort((x, y) => y.score - x.score);
+  return candidates.slice(0, CARD_COUNT);
 }
 
-function makeCard(index) {
-  const pool = POOLS[difficulty];
-
-  let isMultiply;
-  if (mode === 'add')           isMultiply = false;
-  else if (mode === 'multiply') isMultiply = true;
-  else                          isMultiply = Math.random() < 0.5;
-
-  const x = randFrom(pool);
-  const y = randFrom(pool);
-  const op     = isMultiply ? '×' : '+';
+function makeCard(index, { op, a, b }) {
+  // Randomly swap a/b so e.g. "3 + 7" and "7 + 3" both appear across rounds
+  const [x, y] = Math.random() < 0.5 ? [a, b] : [b, a];
+  const isMultiply = op === '×';
   const result = isMultiply ? x * y : x + y;
 
   const card = document.createElement('div');
@@ -105,9 +115,7 @@ function newRound() {
   transitioning = false;
 
   board.innerHTML = '';
-  for (let i = 0; i < CARD_COUNT; i++) {
-    board.appendChild(makeCard(i));
-  }
+  dealCards().forEach((pair, i) => board.appendChild(makeCard(i, pair)));
 
   board.querySelector('.card')?.focus();
 }
