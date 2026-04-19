@@ -5,6 +5,8 @@ const PAUSE_MS     = 2000;
 const EXIT_STAGGER = 40;
 const EXIT_DUR     = 350;
 
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
 const board       = document.getElementById('board');
 const modeButtons = document.querySelectorAll('.mode-btn');
 const diffButtons = document.querySelectorAll('.diff-btn');
@@ -95,7 +97,7 @@ function flipCard(card) {
 
   if (flippedCount === CARD_COUNT) {
     transitioning = true;
-    setTimeout(exitCards, PAUSE_MS);
+    setTimeout(exitCards, reducedMotion.matches ? 0 : PAUSE_MS);
   }
 }
 
@@ -106,7 +108,9 @@ function exitCards() {
     card.classList.add('exiting');
   });
 
-  const totalExitMs = EXIT_STAGGER * (CARD_COUNT - 1) + EXIT_DUR;
+  const totalExitMs = reducedMotion.matches
+    ? 0
+    : EXIT_STAGGER * (CARD_COUNT - 1) + EXIT_DUR;
   setTimeout(newRound, totalExitMs);
 }
 
