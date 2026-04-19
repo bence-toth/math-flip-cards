@@ -12,7 +12,14 @@ button { font-family: inherit; }
   --clr-front-4:   #1dd1a1;
   --clr-front-5:   #a29bfe;
   --clr-front-6:   #fd79a8;
-  --clr-back:      #ffeaa7;
+  --clr-shadow-1:  #cc3e3e;
+  --clr-shadow-2:  #cc7318;
+  --clr-shadow-3:  #17aecb;
+  --clr-shadow-4:  #0ea578;
+  --clr-shadow-5:  #6c63ce;
+  --clr-shadow-6:  #cb4478;
+  --clr-back:      #d8d4cc;
+  --clr-shadow-back: #a8a49c;
   --clr-back-text: #2d3436;
   --clr-white:     #ffffff;
   --radius:        1.2rem;
@@ -145,6 +152,7 @@ main {
   transition: transform var(--transition);
   border-radius: var(--radius);
   will-change: transform;
+  box-shadow: 0 6px 0 var(--clr-shadow, rgba(0,0,0,.2));
 }
 
 .card[aria-pressed="true"] .card-inner {
@@ -182,6 +190,15 @@ main {
 .card:nth-child(6n+4)  .card-front { background: var(--clr-front-4); }
 .card:nth-child(6n+5)  .card-front { background: var(--clr-front-5); }
 .card:nth-child(6n+6)  .card-front { background: var(--clr-front-6); }
+
+.card:nth-child(6n+1) .card-inner { --clr-shadow: var(--clr-shadow-1); }
+.card:nth-child(6n+2) .card-inner { --clr-shadow: var(--clr-shadow-2); }
+.card:nth-child(6n+3) .card-inner { --clr-shadow: var(--clr-shadow-3); }
+.card:nth-child(6n+4) .card-inner { --clr-shadow: var(--clr-shadow-4); }
+.card:nth-child(6n+5) .card-inner { --clr-shadow: var(--clr-shadow-5); }
+.card:nth-child(6n+6) .card-inner { --clr-shadow: var(--clr-shadow-6); }
+
+.card[aria-pressed="true"] .card-inner { --clr-shadow: var(--clr-shadow-back); }
 
 .card-front .question {
   font-size: clamp(1.5rem, 4vw, 2.4rem);
