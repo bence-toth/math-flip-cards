@@ -256,7 +256,6 @@ main {
   inset: 0;
   border-radius: var(--radius);
   backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -382,7 +381,6 @@ body[data-typein="off"] .card[data-state="flipped"] .card-answer-clip {
   text-align: center;
   outline: none;
   appearance: textfield;
-  -moz-appearance: textfield;
 }
 
 .card-input::-webkit-outer-spin-button,
