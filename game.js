@@ -89,17 +89,17 @@ function makeCard(index, { op, a, b }) {
   card.style.setProperty('--i', index);
 
   card.innerHTML = `
-    <div class="card-inner" aria-hidden="true">
+    <div class="card-inner">
       <div class="card-face card-front">
-        <span class="question">${x} ${op} ${y}</span>
+        <span class="question" aria-hidden="true">${x} ${op} ${y}</span>
         <div class="card-answer-clip">
           <div class="card-answer">
-            <input class="card-input" type="number" min="0" max="9999" autocomplete="off" tabindex="-1" />
-            <button class="card-submit" type="button" tabindex="-1">✓</button>
+            <input class="card-input" type="number" min="0" max="9999" name="answer" autocomplete="off" tabindex="-1" aria-label="Your answer to ${x} ${op} ${y}" />
+            <button class="card-submit" type="button" tabindex="-1" aria-label="Submit answer">✓</button>
           </div>
         </div>
       </div>
-      <div class="card-face card-back">
+      <div class="card-face card-back" aria-hidden="true">
         <span class="guess" hidden></span>
         <span class="equation">${x} ${op} ${y} =</span>
         <span class="answer">${result}</span>
