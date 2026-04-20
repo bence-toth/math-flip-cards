@@ -220,23 +220,36 @@ main {
 }
 
 /* Answer input — hidden until card is activated */
+.card-answer-clip {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s cubic-bezier(.4,1.2,.6,1);
+}
+
+.card[data-state="answering"] .card-answer-clip,
+.card[data-state="flipped"] .card-answer-clip {
+  grid-template-rows: 1fr;
+}
+
 .card-answer {
   display: flex;
   align-items: stretch;
   gap: .4rem;
-  max-height: 0;
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
   transform: translateY(0.4rem);
-  transition: max-height 0.3s cubic-bezier(.4,1.2,.6,1),
-              opacity 0.2s 0.15s,
+}
+
+.card[data-state="answering"] .card-answer {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition: opacity 0.2s 0.1s,
               transform 0.3s cubic-bezier(.4,1.2,.6,1);
 }
 
-.card[data-state="answering"] .card-answer,
 .card[data-state="flipped"] .card-answer {
-  max-height: 3rem;
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
@@ -324,7 +337,7 @@ main {
   box-shadow: 0 6px 0 var(--clr-shadow-back), 0 0 0 3px #e17055;
 }
 
-.card[data-correct] .card-back .equation {
+.card[data-guessed] .card-back .equation {
   display: none;
 }
 

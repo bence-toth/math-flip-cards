@@ -55,9 +55,11 @@ function makeCard(index, { op, a, b }) {
     <div class="card-inner" aria-hidden="true">
       <div class="card-face card-front">
         <span class="question">${x} ${op} ${y}</span>
-        <div class="card-answer">
-          <input class="card-input" type="number" min="0" max="9999" autocomplete="off" />
-          <button class="card-submit" type="button" tabindex="-1">✓</button>
+        <div class="card-answer-clip">
+          <div class="card-answer">
+            <input class="card-input" type="number" min="0" max="9999" autocomplete="off" />
+            <button class="card-submit" type="button" tabindex="-1">✓</button>
+          </div>
         </div>
       </div>
       <div class="card-face card-back">
@@ -96,9 +98,18 @@ function makeCard(index, { op, a, b }) {
   return card;
 }
 
+function deactivateCard(card) {
+  card.dataset.state = 'idle';
+  card.setAttribute('tabindex', '0');
+  card.querySelector('.card-input').value = '';
+}
+
 function activateCard(card) {
   if (transitioning) return;
-  if (card.dataset.state !== 'idle') return;
+  if (card.dataset.state === 'answering') return;
+  if (card.dataset.state === 'flipped') return;
+
+  board.querySelectorAll('.card[data-state="answering"]').forEach(deactivateCard);
 
   card.dataset.state = 'answering';
   card.setAttribute('tabindex', '-1');
@@ -116,6 +127,7 @@ function submitCard(card) {
   card.dataset.correct = correct ? 'yes' : 'no';
 
   if (guess !== '') {
+    card.dataset.guessed = 'yes';
     const guessEl  = card.querySelector('.guess');
     const eqBase   = card.querySelector('.equation').textContent.replace(/\s*=$/, '');
     const symbol   = correct ? '=' : '≠';
