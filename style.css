@@ -285,16 +285,23 @@ main {
   font-weight: 700;
   aspect-ratio: 1;
   padding: 0;
-  border: 2px solid rgba(255,255,255,.6);
+  border: none;
+  border-bottom: 4px solid #00896e;
   border-radius: .6rem;
-  background: rgba(255,255,255,.25);
+  background: #00b894;
   color: #fff;
   cursor: pointer;
   line-height: 1;
+  transition: transform 0.1s, filter 0.1s;
 }
 
 .card-submit:hover {
-  background: rgba(255,255,255,.4);
+  filter: brightness(1.1);
+}
+
+.card-submit:active {
+  transform: translateY(2px);
+  border-bottom-width: 2px;
 }
 
 .card-submit:focus-visible {
