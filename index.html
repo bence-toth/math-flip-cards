@@ -1,60 +1,76 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Math Flip Cards</title>
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#6c5ce7" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <main>
-    <div class="topbar">
-      <div class="toolbar" role="group" aria-label="Operation mode">
-        <button class="mode-btn active" data-mode="add" aria-pressed="true">only +</button>
-        <button class="mode-btn" data-mode="multiply" aria-pressed="false">only ×</button>
-        <button class="mode-btn" data-mode="both" aria-pressed="false">both + and ×</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Math Flip Cards</title>
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#6c5ce7" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <div class="topbar">
+        <div class="toolbar" role="group" aria-label="Operation mode">
+          <button class="mode-btn active" data-mode="add" aria-pressed="true">
+            only +
+          </button>
+          <button class="mode-btn" data-mode="multiply" aria-pressed="false">
+            only ×
+          </button>
+          <button class="mode-btn" data-mode="both" aria-pressed="false">
+            both + and ×
+          </button>
+        </div>
+
+        <div class="toolbar" role="group" aria-label="Maximum number">
+          <button class="max-btn" data-max="1" aria-pressed="false">1</button>
+          <button class="max-btn" data-max="2" aria-pressed="false">2</button>
+          <button class="max-btn" data-max="3" aria-pressed="false">3</button>
+          <button class="max-btn" data-max="4" aria-pressed="false">4</button>
+          <button class="max-btn" data-max="5" aria-pressed="false">5</button>
+          <button class="max-btn" data-max="6" aria-pressed="false">6</button>
+          <button class="max-btn" data-max="7" aria-pressed="false">7</button>
+          <button class="max-btn" data-max="8" aria-pressed="false">8</button>
+          <button class="max-btn" data-max="9" aria-pressed="false">9</button>
+          <button class="max-btn active" data-max="10" aria-pressed="true">
+            10
+          </button>
+        </div>
       </div>
 
-      <div class="toolbar" role="group" aria-label="Maximum number">
-        <button class="max-btn" data-max="1" aria-pressed="false">1</button>
-        <button class="max-btn" data-max="2" aria-pressed="false">2</button>
-        <button class="max-btn" data-max="3" aria-pressed="false">3</button>
-        <button class="max-btn" data-max="4" aria-pressed="false">4</button>
-        <button class="max-btn" data-max="5" aria-pressed="false">5</button>
-        <button class="max-btn" data-max="6" aria-pressed="false">6</button>
-        <button class="max-btn" data-max="7" aria-pressed="false">7</button>
-        <button class="max-btn" data-max="8" aria-pressed="false">8</button>
-        <button class="max-btn" data-max="9" aria-pressed="false">9</button>
-        <button class="max-btn active" data-max="10" aria-pressed="true">10</button>
-      </div>
-    </div>
+      <div
+        id="board"
+        class="board"
+        role="grid"
+        aria-label="Math flip card board"
+      ></div>
 
-    <div
-      id="board"
-      class="board"
-      role="grid"
-      aria-label="Math flip card board"
-    ></div>
-
-    <div class="bottombar">
-      <div class="typein-control">
-        <button class="typein-toggle active" aria-pressed="true" aria-label="Type in">
-          <span class="typein-thumb"></span>
-        </button>
-        <span class="typein-label">Type in</span>
+      <div class="bottombar">
+        <div class="typein-control">
+          <button
+            class="typein-toggle active"
+            aria-pressed="true"
+            aria-label="Type in"
+          >
+            <span class="typein-thumb"></span>
+          </button>
+          <span class="typein-label">Type in</span>
+        </div>
+        <div class="typein-control">
+          <button
+            class="typein-toggle sound-toggle active"
+            aria-pressed="true"
+            aria-label="Sound"
+          >
+            <span class="typein-thumb"></span>
+          </button>
+          <span class="typein-label sound-label">Sound</span>
+        </div>
       </div>
-      <div class="typein-control">
-        <button class="typein-toggle sound-toggle active" aria-pressed="true" aria-label="Sound">
-          <span class="typein-thumb"></span>
-        </button>
-        <span class="typein-label sound-label">Sound</span>
-      </div>
-    </div>
-  </main>
+    </main>
 
-  <script src="game.js"></script>
-</body>
+    <script src="game.js"></script>
+  </body>
 </html>

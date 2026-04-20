@@ -6,18 +6,18 @@
 
 ## File map
 
-| File | Role |
-|------|------|
-| `index.html` | Document structure and static markup |
-| `style.css` | All visual styles, animations, colour palette, responsive layout |
-| `game.js` | Game logic — card sampling, activate/submit flow, correctness feedback, round transitions |
+| File         | Role                                                                                      |
+| ------------ | ----------------------------------------------------------------------------------------- |
+| `index.html` | Document structure and static markup                                                      |
+| `style.css`  | All visual styles, animations, colour palette, responsive layout                          |
+| `game.js`    | Game logic — card sampling, activate/submit flow, correctness feedback, round transitions |
 
 ## Key invariants
 
 - **No external dependencies** except the Mali Google Font. Do not introduce `npm`, bundlers, or additional CDN imports.
 - **Three files only** (`index.html`, `style.css`, `game.js`). Do not split logic into multiple JS modules unless explicitly asked.
 - **CARD_COUNT is 12** and the grid is always 4 × 3 (or 3 × 4 on narrow screens). Do not change this without being asked.
-- **The larger operand always stays in the 1–10 range.** The `maxNum` setting (1–10) caps the *smaller* operand only; the larger one is always drawn from the full 1–10 pool.
+- **The larger operand always stays in the 1–10 range.** The `maxNum` setting (1–10) caps the _smaller_ operand only; the larger one is always drawn from the full 1–10 pool.
 - **Accessibility is non-negotiable.** Every interactive element must have a keyboard handler, visible focus style, and appropriate ARIA attributes. Do not remove or weaken any a11y feature.
 - **`prefers-reduced-motion` must be respected.** CSS collapses animations to near-instant; JS skips the post-flip pause and exit stagger.
 
