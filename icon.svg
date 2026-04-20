@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#fff8f0"/>
+  <!-- Card back (left, slightly rotated) -->
+  <rect x="80" y="120" width="200" height="280" rx="24" fill="#d8d4cc" transform="rotate(-10 180 260)"/>
+  <!-- Card front (right, colorful) -->
+  <rect x="232" y="120" width="200" height="280" rx="24" fill="#ff6b6b"/>
+  <!-- Plus sign on front card -->
+  <rect x="267" y="250" width="130" height="20" rx="8" fill="#fff8f0"/>
+  <rect x="322" y="195" width="20" height="130" rx="8" fill="#fff8f0"/>
+</svg>
