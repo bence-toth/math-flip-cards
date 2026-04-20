@@ -12,6 +12,23 @@ const modeButtons = document.querySelectorAll('.mode-btn');
 const maxButtons  = document.querySelectorAll('.max-btn');
 const typeinBtn   = document.querySelector('.typein-toggle');
 const typeinLabel = document.querySelector('.typein-label');
+const soundBtn    = document.querySelector('.sound-toggle');
+const soundLabel  = document.querySelector('.sound-label');
+
+const sfx = {
+  flip:    new Audio('sound_flip.mp3'),
+  correct: new Audio('sound_correct.mp3'),
+  wrong:   new Audio('sound_wrong.mp3'),
+};
+
+let soundOn = true;
+
+function playSound(name) {
+  if (!soundOn) return;
+  const audio = sfx[name];
+  audio.currentTime = 0;
+  audio.play();
+}
 
 let flippedCount  = 0;
 let transitioning = false;
@@ -114,6 +131,7 @@ function activateCard(card) {
 
   if (!typeIn) {
     card.dataset.state = 'flipped';
+    playSound('flip');
     flippedCount++;
     const totalCards = board.querySelectorAll('.card').length;
     if (flippedCount === totalCards) {
@@ -141,12 +159,15 @@ function submitCard(card) {
 
   if (guess !== '') {
     card.dataset.correct = correct ? 'yes' : 'no';
+    playSound(correct ? 'correct' : 'wrong');
     card.dataset.guessed = 'yes';
     const guessEl  = card.querySelector('.guess');
     const eqBase   = card.querySelector('.equation').textContent.replace(/\s*=$/, '');
     const symbol   = correct ? '=' : '≠';
     guessEl.textContent = `${eqBase} ${symbol} ${guess}`;
     guessEl.hidden = false;
+  } else {
+    playSound('flip');
   }
 
   const eq  = card.querySelector('.equation').textContent;
@@ -207,6 +228,13 @@ setupToggleGroup(modeButtons, () => mode, (v) => { mode = v; });
 setupToggleGroup(maxButtons, () => String(maxNum), (v) => { maxNum = Number(v); });
 
 typeinLabel.addEventListener('click', () => typeinBtn.click());
+soundLabel.addEventListener('click', () => soundBtn.click());
+
+soundBtn.addEventListener('click', () => {
+  soundOn = !soundOn;
+  soundBtn.classList.toggle('active', soundOn);
+  soundBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+});
 
 typeinBtn.addEventListener('click', () => {
   if (transitioning) return;
