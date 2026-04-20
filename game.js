@@ -21,7 +21,24 @@ const sfx = {
   wrong:   new Audio('sound_wrong.mp3'),
 };
 
-let soundOn = true;
+const SETTINGS_KEY = 'math-flip-cards-settings';
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem(SETTINGS_KEY);
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveSettings() {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify({ mode, maxNum, typeIn, soundOn }));
+}
+
+const _saved = loadSettings();
+
+let soundOn = _saved.soundOn ?? true;
 
 function playSound(name) {
   if (!soundOn) return;
@@ -32,9 +49,9 @@ function playSound(name) {
 
 let flippedCount  = 0;
 let transitioning = false;
-let mode          = 'add';  // 'add' | 'multiply' | 'both'
-let maxNum        = 10; // 1–10: highest number that can appear on a card
-let typeIn        = true;
+let mode          = _saved.mode   ?? 'add';  // 'add' | 'multiply' | 'both'
+let maxNum        = _saved.maxNum ?? 10;     // 1–10: highest number that can appear on a card
+let typeIn        = _saved.typeIn ?? true;
 
 function dealCards() {
   const nums = [1,2,3,4,5,6,7,8,9,10];
@@ -224,8 +241,8 @@ function setupToggleGroup(buttons, getCurrent, setCurrent) {
   });
 }
 
-setupToggleGroup(modeButtons, () => mode, (v) => { mode = v; });
-setupToggleGroup(maxButtons, () => String(maxNum), (v) => { maxNum = Number(v); });
+setupToggleGroup(modeButtons, () => mode, (v) => { mode = v; saveSettings(); });
+setupToggleGroup(maxButtons, () => String(maxNum), (v) => { maxNum = Number(v); saveSettings(); });
 
 typeinLabel.addEventListener('click', () => typeinBtn.click());
 soundLabel.addEventListener('click', () => soundBtn.click());
@@ -234,6 +251,7 @@ soundBtn.addEventListener('click', () => {
   soundOn = !soundOn;
   soundBtn.classList.toggle('active', soundOn);
   soundBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
+  saveSettings();
 });
 
 typeinBtn.addEventListener('click', () => {
@@ -242,11 +260,30 @@ typeinBtn.addEventListener('click', () => {
   typeinBtn.classList.toggle('active', typeIn);
   typeinBtn.setAttribute('aria-pressed', typeIn ? 'true' : 'false');
   document.body.dataset.typein = typeIn ? 'on' : 'off';
+  saveSettings();
   transitioning = true;
   exitCards();
 });
 
-document.body.dataset.typein = 'on';
+document.body.dataset.typein = typeIn ? 'on' : 'off';
+
+modeButtons.forEach((btn) => {
+  const active = btn.dataset.mode === mode;
+  btn.classList.toggle('active', active);
+  btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+});
+
+maxButtons.forEach((btn) => {
+  const active = Number(btn.dataset.max) === maxNum;
+  btn.classList.toggle('active', active);
+  btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+});
+
+typeinBtn.classList.toggle('active', typeIn);
+typeinBtn.setAttribute('aria-pressed', typeIn ? 'true' : 'false');
+
+soundBtn.classList.toggle('active', soundOn);
+soundBtn.setAttribute('aria-pressed', soundOn ? 'true' : 'false');
 
 // Initial deal
 newRound();
