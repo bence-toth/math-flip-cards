@@ -10,45 +10,45 @@ const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 const board = document.getElementById("board");
 const modeButtons = document.querySelectorAll(".mode-btn");
 const maxButtons = document.querySelectorAll(".max-btn");
-const typeinBtn = document.querySelector(".typein-toggle");
-const typeinLabel = document.querySelector(".typein-label");
-const soundBtn = document.querySelector(".sound-toggle");
+const typeInButton = document.querySelector(".type-in-toggle");
+const typeInLabel = document.querySelector(".type-in-label");
+const soundButton = document.querySelector(".sound-toggle");
 const soundLabel = document.querySelector(".sound-label");
 
-const sfx = {
+const sfx = Object.freeze({
   flip: new Audio("sound_flip.mp3"),
   correct: new Audio("sound_correct.mp3"),
   wrong: new Audio("sound_wrong.mp3"),
-};
+});
 
 const SETTINGS_KEY = "math-flip-cards-settings";
 
-function loadSettings() {
+const loadSettings = () => {
   try {
     const saved = localStorage.getItem(SETTINGS_KEY);
     return saved ? JSON.parse(saved) : {};
   } catch {
     return {};
   }
-}
+};
 
-function saveSettings() {
+const saveSettings = () => {
   localStorage.setItem(
     SETTINGS_KEY,
     JSON.stringify({ mode, maxNum, typeIn, soundOn }),
   );
-}
+};
 
 const _saved = loadSettings();
 
 let soundOn = _saved.soundOn ?? true;
 
-function playSound(name) {
+const playSound = (name) => {
   if (!soundOn) return;
   const audio = sfx[name];
   audio.currentTime = 0;
   audio.play();
-}
+};
 
 let flippedCount = 0;
 let transitioning = false;
@@ -56,17 +56,17 @@ let mode = _saved.mode ?? "add"; // 'add' | 'multiply' | 'both'
 let maxNum = _saved.maxNum ?? 10; // 1–10: highest number that can appear on a card
 let typeIn = _saved.typeIn ?? true;
 
-function dealCards() {
-  const nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const dealCards = () => {
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const ops = mode === "both" ? ["+", "×"] : mode === "add" ? ["+"] : ["×"];
   const candidates = [];
 
   for (const op of ops) {
-    for (let i = 0; i < nums.length; i++) {
-      const a = nums[i];
+    for (let i = 0; i < numbers.length; i++) {
+      const a = numbers[i];
       if (a > maxNum) break; // a is the smaller operand; all further i also exceed limit
-      for (let j = i; j < nums.length; j++) {
-        const b = nums[j];
+      for (let j = i; j < numbers.length; j++) {
+        const b = numbers[j];
         const score = Math.random();
         candidates.push({ op, a, b, score });
       }
@@ -75,9 +75,9 @@ function dealCards() {
 
   candidates.sort((x, y) => y.score - x.score);
   return candidates.slice(0, Math.min(CARD_COUNT, candidates.length));
-}
+};
 
-function makeCard(index, { op, a, b }) {
+const makeCard = (index, { op, a, b }) => {
   // Randomly swap a/b so e.g. "3 + 7" and "7 + 3" both appear across rounds
   const [x, y] = Math.random() < 0.5 ? [a, b] : [b, a];
   const isMultiply = op === "×";
@@ -119,7 +119,7 @@ function makeCard(index, { op, a, b }) {
   });
 
   const input = card.querySelector(".card-input");
-  const submitBtn = card.querySelector(".card-submit");
+  const submitButton = card.querySelector(".card-submit");
 
   input.addEventListener("click", (e) => e.stopPropagation());
   input.addEventListener("keydown", (e) => {
@@ -130,21 +130,21 @@ function makeCard(index, { op, a, b }) {
     }
   });
 
-  submitBtn.addEventListener("click", (e) => {
+  submitButton.addEventListener("click", (e) => {
     e.stopPropagation();
     submitCard(card);
   });
 
   return card;
-}
+};
 
-function deactivateCard(card) {
+const deactivateCard = (card) => {
   card.dataset.state = "idle";
   card.setAttribute("tabindex", "0");
   card.querySelector(".card-input").value = "";
-}
+};
 
-function activateCard(card) {
+const activateCard = (card) => {
   if (transitioning) return;
   if (card.dataset.state === "answering") return;
   if (card.dataset.state === "flipped") return;
@@ -168,9 +168,9 @@ function activateCard(card) {
   card.dataset.state = "answering";
   card.setAttribute("tabindex", "-1");
   card.querySelector(".card-input").focus();
-}
+};
 
-function submitCard(card) {
+const submitCard = (card) => {
   if (card.dataset.state !== "answering") return;
 
   const input = card.querySelector(".card-input");
@@ -206,10 +206,10 @@ function submitCard(card) {
     transitioning = true;
     setTimeout(exitCards, reducedMotion.matches ? 0 : PAUSE_MS);
   }
-}
+};
 
-function exitCards() {
-  const cards = [...board.querySelectorAll(".card")];
+const exitCards = () => {
+  const cards = Array.from(board.querySelectorAll(".card"));
   cards.forEach((card, i) => {
     card.style.setProperty("--i", i);
     card.classList.add("exiting");
@@ -219,9 +219,9 @@ function exitCards() {
     ? 0
     : EXIT_STAGGER * (cards.length - 1) + EXIT_DUR;
   setTimeout(newRound, totalExitMs);
-}
+};
 
-function newRound() {
+const newRound = () => {
   flippedCount = 0;
   transitioning = false;
 
@@ -229,9 +229,9 @@ function newRound() {
   dealCards().forEach((pair, i) => board.appendChild(makeCard(i, pair)));
 
   board.querySelector(".card")?.focus();
-}
+};
 
-function setupToggleGroup(buttons, getCurrent, setCurrent) {
+const setupToggleGroup = (buttons, getCurrent, setCurrent) => {
   buttons.forEach((btn) => {
     btn.addEventListener("click", () => {
       if (
@@ -251,7 +251,7 @@ function setupToggleGroup(buttons, getCurrent, setCurrent) {
       exitCards();
     });
   });
-}
+};
 
 setupToggleGroup(
   modeButtons,
@@ -270,28 +270,28 @@ setupToggleGroup(
   },
 );
 
-typeinLabel.addEventListener("click", () => typeinBtn.click());
-soundLabel.addEventListener("click", () => soundBtn.click());
+typeInLabel.addEventListener("click", () => typeInButton.click());
+soundLabel.addEventListener("click", () => soundButton.click());
 
-soundBtn.addEventListener("click", () => {
+soundButton.addEventListener("click", () => {
   soundOn = !soundOn;
-  soundBtn.classList.toggle("active", soundOn);
-  soundBtn.setAttribute("aria-pressed", soundOn ? "true" : "false");
+  soundButton.classList.toggle("active", soundOn);
+  soundButton.setAttribute("aria-pressed", soundOn ? "true" : "false");
   saveSettings();
 });
 
-typeinBtn.addEventListener("click", () => {
+typeInButton.addEventListener("click", () => {
   if (transitioning) return;
   typeIn = !typeIn;
-  typeinBtn.classList.toggle("active", typeIn);
-  typeinBtn.setAttribute("aria-pressed", typeIn ? "true" : "false");
-  document.body.dataset.typein = typeIn ? "on" : "off";
+  typeInButton.classList.toggle("active", typeIn);
+  typeInButton.setAttribute("aria-pressed", typeIn ? "true" : "false");
+  document.body.dataset.typeIn = typeIn ? "on" : "off";
   saveSettings();
   transitioning = true;
   exitCards();
 });
 
-document.body.dataset.typein = typeIn ? "on" : "off";
+document.body.dataset.typeIn = typeIn ? "on" : "off";
 
 modeButtons.forEach((btn) => {
   const active = btn.dataset.mode === mode;
@@ -305,11 +305,11 @@ maxButtons.forEach((btn) => {
   btn.setAttribute("aria-pressed", active ? "true" : "false");
 });
 
-typeinBtn.classList.toggle("active", typeIn);
-typeinBtn.setAttribute("aria-pressed", typeIn ? "true" : "false");
+typeInButton.classList.toggle("active", typeIn);
+typeInButton.setAttribute("aria-pressed", typeIn ? "true" : "false");
 
-soundBtn.classList.toggle("active", soundOn);
-soundBtn.setAttribute("aria-pressed", soundOn ? "true" : "false");
+soundButton.classList.toggle("active", soundOn);
+soundButton.setAttribute("aria-pressed", soundOn ? "true" : "false");
 
 // Initial deal
 newRound();
