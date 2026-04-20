@@ -209,23 +209,37 @@ main {
 .card[data-state="flipped"] .card-inner { --clr-shadow: var(--clr-shadow-back); }
 
 .card-front .question {
-  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  font-size: clamp(1rem, 2.5vw, 1.6rem);
+  transform: scale(1.5);
+  transition: transform 0.3s cubic-bezier(.4,1.2,.6,1);
+}
+
+.card[data-state="answering"] .question,
+.card[data-state="flipped"] .question {
+  transform: scale(1);
 }
 
 /* Answer input — hidden until card is activated */
 .card-answer {
-  display: none;
+  display: flex;
   align-items: stretch;
   gap: .4rem;
-  margin-top: .3rem;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.4rem);
+  transition: max-height 0.3s cubic-bezier(.4,1.2,.6,1),
+              opacity 0.2s 0.15s,
+              transform 0.3s cubic-bezier(.4,1.2,.6,1);
 }
 
-.card[data-state="answering"] .card-answer {
-  display: flex;
-}
-
-.card[data-state="answering"] .question {
-  font-size: clamp(1rem, 2.5vw, 1.6rem);
+.card[data-state="answering"] .card-answer,
+.card[data-state="flipped"] .card-answer {
+  max-height: 3rem;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .card-input {
