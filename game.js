@@ -10,11 +10,14 @@ const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 const board       = document.getElementById('board');
 const modeButtons = document.querySelectorAll('.mode-btn');
 const maxButtons  = document.querySelectorAll('.max-btn');
+const typeinBtn   = document.querySelector('.typein-toggle');
+const typeinLabel = document.querySelector('.typein-label');
 
 let flippedCount  = 0;
 let transitioning = false;
 let mode          = 'add';  // 'add' | 'multiply' | 'both'
 let maxNum        = 10; // 1–10: highest number that can appear on a card
+let typeIn        = true;
 
 function dealCards() {
   const nums = [1,2,3,4,5,6,7,8,9,10];
@@ -57,7 +60,7 @@ function makeCard(index, { op, a, b }) {
         <span class="question">${x} ${op} ${y}</span>
         <div class="card-answer-clip">
           <div class="card-answer">
-            <input class="card-input" type="number" min="0" max="9999" autocomplete="off" />
+            <input class="card-input" type="number" min="0" max="9999" autocomplete="off" tabindex="-1" />
             <button class="card-submit" type="button" tabindex="-1">✓</button>
           </div>
         </div>
@@ -109,6 +112,17 @@ function activateCard(card) {
   if (card.dataset.state === 'answering') return;
   if (card.dataset.state === 'flipped') return;
 
+  if (!typeIn) {
+    card.dataset.state = 'flipped';
+    flippedCount++;
+    const totalCards = board.querySelectorAll('.card').length;
+    if (flippedCount === totalCards) {
+      transitioning = true;
+      setTimeout(exitCards, reducedMotion.matches ? 0 : PAUSE_MS);
+    }
+    return;
+  }
+
   board.querySelectorAll('.card[data-state="answering"]').forEach(deactivateCard);
 
   card.dataset.state = 'answering';
@@ -123,10 +137,10 @@ function submitCard(card) {
   const guess   = input.value.trim();
   const correct = Number(guess) === Number(card.querySelector('.answer').textContent);
 
-  card.dataset.state   = 'flipped';
-  card.dataset.correct = correct ? 'yes' : 'no';
+  card.dataset.state = 'flipped';
 
   if (guess !== '') {
+    card.dataset.correct = correct ? 'yes' : 'no';
     card.dataset.guessed = 'yes';
     const guessEl  = card.querySelector('.guess');
     const eqBase   = card.querySelector('.equation').textContent.replace(/\s*=$/, '');
@@ -191,6 +205,20 @@ function setupToggleGroup(buttons, getCurrent, setCurrent) {
 
 setupToggleGroup(modeButtons, () => mode, (v) => { mode = v; });
 setupToggleGroup(maxButtons, () => String(maxNum), (v) => { maxNum = Number(v); });
+
+typeinLabel.addEventListener('click', () => typeinBtn.click());
+
+typeinBtn.addEventListener('click', () => {
+  if (transitioning) return;
+  typeIn = !typeIn;
+  typeinBtn.classList.toggle('active', typeIn);
+  typeinBtn.setAttribute('aria-pressed', typeIn ? 'true' : 'false');
+  document.body.dataset.typein = typeIn ? 'on' : 'off';
+  transitioning = true;
+  exitCards();
+});
+
+document.body.dataset.typein = 'on';
 
 // Initial deal
 newRound();

@@ -121,6 +121,66 @@ main {
   box-shadow: var(--focus-ring), 0 4px 0 #00896e;
 }
 
+.bottombar {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.typein-control {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  cursor: pointer;
+}
+
+.typein-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #555;
+  user-select: none;
+}
+
+.typein-toggle {
+  position: relative;
+  width: 3.2rem;
+  height: 1.8rem;
+  border: none;
+  border-radius: 3rem;
+  background: #c8c8c8;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background .25s, box-shadow .1s;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.15), 0 4px 0 #aaa;
+}
+
+.typein-toggle.active {
+  background: #6c5ce7;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.2), 0 4px 0 #4834d4;
+}
+
+.typein-toggle:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.typein-thumb {
+  position: absolute;
+  top: .3rem;
+  left: .3rem;
+  width: 1.2rem;
+  height: 1.2rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,.25);
+  transition: transform .25s cubic-bezier(.4,1.4,.6,1);
+}
+
+.typein-toggle.active .typein-thumb {
+  transform: translateX(1.4rem);
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -229,6 +289,10 @@ main {
 .card[data-state="answering"] .card-answer-clip,
 .card[data-state="flipped"] .card-answer-clip {
   grid-template-rows: 1fr;
+}
+
+body[data-typein="off"] .card[data-state="flipped"] .card-answer-clip {
+  grid-template-rows: 0fr;
 }
 
 .card-answer {
